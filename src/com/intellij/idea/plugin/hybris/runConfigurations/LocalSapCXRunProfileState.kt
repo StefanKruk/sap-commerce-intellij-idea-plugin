@@ -72,24 +72,9 @@ class LocalSapCXRunProfileState(
         val processHandler = ProcessHandlerFactory.getInstance().createColoredProcessHandler(commandLine)
         ProcessTerminatedListener.attach(processHandler)
 
-        if (executor is DefaultDebugExecutor) {
-            waitForPort(sapCXOptions.remoteDebugHost ?: DEBUG_HOST, Integer.valueOf(sapCXOptions.remoteDebugPort ?: DEBUG_PORT), 30000)
-        }
-
         return processHandler
     }
 
-    private fun waitForPort(host: String, port: Int, timeoutMillis: Long = 30000) {
-        val startTime = System.currentTimeMillis()
-        while (System.currentTimeMillis() - startTime < timeoutMillis) {
-            try {
-                Socket(host, port).use { return } // success
-            } catch (e: IOException) {
-                Thread.sleep(500)
-            }
-        }
-        throw RuntimeException("Timeout waiting for debug port $host:$port")
-    }
 
     private fun updateDebugPort(debugPort: String) {
         val debuggerRunnerSettings = environment.runnerSettings as GenericDebuggerRunnerSettings
